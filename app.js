@@ -13,22 +13,13 @@ let mouseDown = false
 let white = '#fefefe'
 let currentColor = '#333333'
 let cMode = 'none'
-document.getElementById("container").onmousedown = () => (mouseDown = true)
-document.getElementById("container").onmouseup = () => (mouseDown = false)
+document.body.onmousedown = () => (mouseDown = true)
+document.body.onmouseup = () => (mouseDown = false)
 
 defaultGrid(value)
 
 function newColor(color){
-    if (cMode === 'eraser'){
-        currentColor = white
-    }
-    else if (cMode === 'rainbow') {
-        const R = Math.floor(Math.random()*256)
-        const G = Math.floor(Math.random()*256)
-        const B = Math.floor(Math.random()*256)
-        currentColor = `rgb(${R}, ${G}, ${B})`
-    }
-    else currentColor = color
+    currentColor = color
 }
 
 function defaultGrid(e){
@@ -36,9 +27,7 @@ function defaultGrid(e){
 }
 
 function resetGrid(){
-    while (container.firstChild){
-        container.removeChild(container.firstChild)
-    }
+    container.innerHTML = ''
     sizeValue.innerHTML = `Grid size = ${value}x${value}`
     defaultGrid(value)
 }
@@ -50,7 +39,9 @@ function makeRows(num){
     }
     for (i=0; i<num; i++){
         for (j=0; j<num; j++){
-            let newCell = document.createElement("div")
+            const newCell = document.createElement("div")
+            newCell.addEventListener('mousedown', changeColor)
+            newCell.addEventListener('mouseover', changeColor)
             rows[j].appendChild(newCell).className = "cell"
         }
     }
@@ -58,7 +49,18 @@ function makeRows(num){
 
 function changeColor(e){
     if (e.type==='mouseover' && mouseDown===true){
-        if (e.target.matches('.cell')){
+        if (cMode === 'eraser'){
+            currentColor = white
+            e.target.style.cssText = `background-color: ${currentColor};`
+        }
+        else if (cMode === 'rainbow') {
+            const R = Math.floor(Math.random()*256)
+            const G = Math.floor(Math.random()*256)
+            const B = Math.floor(Math.random()*256)
+            currentColor = `rgb(${R}, ${G}, ${B})`
+            e.target.style.cssText = `background-color: ${currentColor};`
+        }
+        else {
             e.target.style.cssText = `background-color: ${currentColor};`
         }
     }
@@ -66,7 +68,6 @@ function changeColor(e){
 
 function changeMode(mode){
     cMode = mode
-    newColor()
 }
 
 function normalColor(e){
@@ -79,8 +80,6 @@ rainbow.onclick = () => changeMode('rainbow')
 colorPicker.onchange = (e) => normalColor(e.target.value)
 
 clear.addEventListener('click', resetGrid)
-container.addEventListener('mousedown', changeColor)
-container.addEventListener('mouseover', changeColor)
 size.addEventListener('input', function (e){
     value = size.value
     resetGrid(value)
