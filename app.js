@@ -3,6 +3,7 @@ const clear = document.getElementById("clear")
 const colorPicker = document.getElementById("colorPicker")
 const eraser = document.getElementById("eraser")
 const rainbow = document.getElementById("rainbow")
+const defColor = document.getElementById("defColor")
 
 let rows = document.getElementsByClassName("gridRow")
 let size = document.getElementById("size")
@@ -11,6 +12,7 @@ let sizeValue = document.getElementById("sizeValue")
 let value = size.value
 let mouseDown = false
 let white = '#fefefe'
+let defaultColor = '#333333'
 let currentColor = '#333333'
 let cMode = 'none'
 document.body.onmousedown = () => (mouseDown = true)
@@ -60,6 +62,10 @@ function changeColor(e){
             currentColor = `rgb(${R}, ${G}, ${B})`
             e.target.style.cssText = `background-color: ${currentColor};`
         }
+        else if (cMode === 'default'){
+            currentColor = defaultColor
+            e.target.style.cssText = `background-color: ${currentColor};`
+        }
         else {
             e.target.style.cssText = `background-color: ${currentColor};`
         }
@@ -72,11 +78,13 @@ function changeMode(mode){
 
 function normalColor(e){
     cMode = 'none'
+    defaultColor = e
     newColor(e)
 }
 
 eraser.onclick = () => changeMode('eraser')
 rainbow.onclick = () => changeMode('rainbow')
+defColor.onclick = () => changeMode('default')
 colorPicker.onchange = (e) => normalColor(e.target.value)
 
 clear.addEventListener('click', resetGrid)
